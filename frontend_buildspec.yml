@@ -1,0 +1,22 @@
+
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+
+  build:
+    commands:
+      - echo "Build phase..."
+      - echo "Preparing files for deployment"
+      
+  post_build:
+    commands:
+      - echo "Deploying to S3..."
+      - aws s3 sync . s3://cc-hw3-bucket-b1 --delete --exclude ".git/*" --exclude "frontend_buildspec.yml" --exclude "README.md"
+      - echo "Deployment complete!"
+
+artifacts:
+  files:
+    - '**/*'
