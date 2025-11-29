@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photo Search & Upload</title>
+  <title>Photo Search & Upload!</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; color: #333; }
     h1 { text-align: center; margin-bottom: 40px; }
@@ -45,7 +45,7 @@
     <script src="sdk/apigClient.js"></script>
 </head>
 <body>
-  <h1>Photo Search & Upload</h1>
+  <h1>Photo Search & Upload!</h1>
 
   <div class="section">
     <h2>Search Photos</h2>
@@ -74,7 +74,7 @@
         const resultsDiv = document.getElementById('results');
         resultsDiv.innerHTML = '';
 
-        if (!res.data || !res.data.results) {
+        if (!res.data || !res.data.results || res.data.results.length === 0) {
           resultsDiv.innerHTML = '<p>No results found.</p>';
           return;
         }
@@ -92,41 +92,45 @@
     }
 
     async function uploadPhoto() {
-      const fileInput = document.getElementById('photoFile');
-      const labelsInput = document.getElementById('customLabels');
+        const fileInput = document.getElementById('photoFile');
+        const labelsInput = document.getElementById('customLabels');
 
-      if (!fileInput.files.length) return alert('Select a photo');
+        if (!fileInput.files.length) return alert('Select a photo');
 
-      const file = fileInput.files[0];
-      const customLabels = labelsInput.value
-        .split(',')
-        .map(l => l.trim())
-        .filter(l => l)
-        .join(', ');
+        const file = fileInput.files[0];
+        const customLabels = labelsInput.value
+          .split(',')
+          .map(l => l.trim())
+          .filter(l => l)
+          .join(', ');
+
+
+      const apiUrl = "https://sezl4xokx3.execute-api.us-east-1.amazonaws.com/v1/upload";
+
+      // Add filename as query parameter
+      const uploadUrl = `${apiUrl}?filename=${encodeURIComponent(sanitizeFilename(file.name))}`;
+
+      status.innerText = "Uploading...";
 
       try {
-        // const fileContent = await readFileAsBinary(file);
-        // console.log(fileContent);
-         // Required by your SDK — custom labels belong in params
-        const params = {
-          "x-amz-meta-customLabels": customLabels,
-          "filename": sanitizeFilename(file.name)
-        };
+          const res = await fetch(uploadUrl, {
+              method: "PUT",
+              headers: {
+                  "Content-Type": file.type,
+                  "x-amz-meta-customLabels": customLabels
+              },
+              body: file                         
+          });
 
-      const additionalParams = {
-        headers: {
-          "Content-Type": file.type,
-          "Accept": file.type
-        }
-      };
+          const text = await res.text();
+          status.innerText = "Upload complete! Response: " + text;
 
-
-        const res = await sdk.uploadPut(params, file, additionalParams);
-        alert('Upload successful');
+          console.log("Upload response:", text);
       } catch (err) {
-        console.error(err);
-        alert('Upload failed');
+          console.error(err);
+          status.innerText = "Upload failed.";
       }
+    
     }
     function sanitizeFilename(originalName) {
       // Remove file extension
