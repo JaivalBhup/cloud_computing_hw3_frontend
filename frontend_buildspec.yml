@@ -14,7 +14,7 @@ phases:
   post_build:
     commands:
       - echo "Deploying to S3..."
-      - aws s3 sync . s3://cc-hw3-bucket-b1 --delete --exclude ".git/*" --exclude "frontend_buildspec.yml" --exclude "README.md"
+      - aws s3 sync ./frontend s3://cc-hw3-bucket-b1 --delete --exclude ".git/*" --exclude "frontend_buildspec.yml" --exclude "README.md"
       - echo "Deployment complete!"
 
 artifacts:

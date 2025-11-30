@@ -51,7 +51,8 @@
     <h2>Search Photos</h2>
     <input id="searchQuery" type="text" placeholder="Enter search text" />
     <button onclick="searchPhotos()">Search</button>
-
+    <br/>
+    <div id="status"></div>
     <div id="results"></div>
   </div>
 
@@ -72,6 +73,8 @@
         const res = await sdk.searchGet({ q });
         console.log(res);
         const resultsDiv = document.getElementById('results');
+        const status = document.getElementById('status');
+        status.innerText = `${res.data.message}`;
         resultsDiv.innerHTML = '';
 
         if (!res.data || !res.data.results || res.data.results.length === 0) {
