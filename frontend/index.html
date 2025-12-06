@@ -58,6 +58,7 @@
 
   <div class="section">
     <h2>Upload Photo</h2>
+      <div id="statusup"></div>
     <input id="photoFile" type="file" accept="image/*" /><br /><br />
     <input id="customLabels" type="text" placeholder="Custom labels (comma separated)" /><br /><br />
     <button onclick="uploadPhoto()">Upload</button>
@@ -97,6 +98,7 @@
     async function uploadPhoto() {
         const fileInput = document.getElementById('photoFile');
         const labelsInput = document.getElementById('customLabels');
+        const status = document.getElementById('statusup');
 
         if (!fileInput.files.length) return alert('Select a photo');
 
@@ -129,6 +131,8 @@
           status.innerText = "Upload complete! Response: " + text;
 
           console.log("Upload response:", text);
+          labelsInput.value = "";
+          fileInput.value = "";
       } catch (err) {
           console.error(err);
           status.innerText = "Upload failed.";
